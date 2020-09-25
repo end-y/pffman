@@ -1,7 +1,7 @@
 let loader;
 async function onStart(){
    loader = PIXI.Loader.shared
-   
+   console.log("yüklendi")
 }
 
 function start(){
