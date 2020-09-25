@@ -1,10 +1,7 @@
 let loader;
 async function onStart(){
    loader = PIXI.Loader.shared
-   await loader.add("patlama","images/patlama.png");
-   await loader.add("restart","images/restart.png");
-   await loader.add("home","images/home.png");
-    console.log("yüklendi 2")
+   
 }
 
 function start(){
@@ -54,6 +51,10 @@ function start(){
     
     app.loader.add("character","images/characters.png");
     app.loader.add("bomb","images/bomb.png");
+    app.loader.add("patlama","images/patlama.png");
+    app.loader.add("restart","images/restart.png");
+    app.loader.add("home","images/home.png");
+    console.log("yüklendi 2")
     app.loader.load(doneLoading);
     app.loader.load(sure)
     
@@ -72,15 +73,14 @@ function start(){
     
     app.stage.addChild(skorPuan)
     app.stage.addChild(bombPng)
-    // app.stage.addChild(oyunbitis)
     
     function interact(){
         return tiles.children[tiles.children.length-1].y+400 == app.renderer.screen.height
     }
     function stopScreen(){
-        let textureButton = new PIXI.Texture.from(loader.resources["restart"].url)
-        let textureButton2 = new PIXI.Texture.from(loader.resources["home"].url)
-        let bg = new PIXI.Texture.from(loader.resources["patlama"].url)
+        let textureButton = new PIXI.Texture.from(app.loader.resources["restart"].url)
+        let textureButton2 = new PIXI.Texture.from(app.loader.resources["home"].url)
+        let bg = new PIXI.Texture.from(app.loader.resources["patlama"].url)
         let restart = new PIXI.Sprite(textureButton)
         let home = new PIXI.Sprite(textureButton2)
         let pauseMenuBG = new PIXI.Graphics();
@@ -129,9 +129,9 @@ function start(){
         var oyunbitis = new PIXI.Container()
     
     var result = new PIXI.Text("Skor: "+ skorPuan.text,{fontFamily : 'Galiver', fontSize: 40, fill : 0x111 });
-    let textureButton = new PIXI.Texture.from(loader.resources["restart"].url)
-    let textureButton2 = new PIXI.Texture.from(loader.resources["home"].url)
-    let bg = new PIXI.Texture.from(loader.resources["patlama"].url)
+    let textureButton = new PIXI.Texture.from(app.loader.resources["restart"].url)
+    let textureButton2 = new PIXI.Texture.from(app.loader.resources["home"].url)
+    let bg = new PIXI.Texture.from(app.loader.resources["patlama"].url)
     let restart = new PIXI.Sprite(textureButton)
     let home = new PIXI.Sprite(textureButton2)
     let pauseMenuBG = new PIXI.Graphics();
@@ -284,13 +284,12 @@ function start(){
         }
         if (player.x < -32) {
             player.x = 800;
-        } else if (player.x > 800) {// if rectangle goes past right boundary
+        } else if (player.x > 800) {
             player.x = -32;
         }
         
     }
     function doneLoading(){
-    
         console.log(a)
         createPlayerSheet();
         createPlayer()
@@ -346,7 +345,7 @@ function start(){
         player.animationSpeed = 0.25;
         player.loop = false;7
         player.interactive = true
-        // player.hitArea =  new PIXI.Rectangle(player.position.x, player.position.y, 250, 250)
+        //# player.hitArea =  new PIXI.Rectangle(player.position.x, player.position.y, 250, 250)
         console.log()
         player.x = character.x;
         player.y = character.y
@@ -384,8 +383,6 @@ function start(){
               
            }
        }
-   
-       // console.log(close)
        
    }
     function createB(x,y){
