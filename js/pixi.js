@@ -84,7 +84,7 @@ function start(){
         let restart = new PIXI.Sprite(textureButton)
         let home = new PIXI.Sprite(textureButton2)
         let pauseMenuBG = new PIXI.Graphics();
-        let bgPng = new PIXI.Sprite(bg)
+//         let bgPng = new PIXI.Sprite(bg)
         let alpha = new PIXI.filters.AlphaFilter(0.2)
         restart.anchor.set(0.5,0.5)
         restart.scale.set(0.2,0.2)
@@ -98,15 +98,15 @@ function start(){
     home.interactive = true
     home.x = app.renderer.screen.width/2 +50
     home.y = app.renderer.screen.height/2
-    bgPng.anchor.set(0.5, 0.5)
-    bgPng.position.set(app.renderer.screen.width/2,app.renderer.screen.height/2)
+//     bgPng.anchor.set(0.5, 0.5)
+//     bgPng.position.set(app.renderer.screen.width/2,app.renderer.screen.height/2)
     pauseMenuBG.beginFill(0xf7931e)
     pauseMenuBG.filters = [alpha]
     pauseMenuBG.drawRect(0, 0, app.renderer.screen.width, app.renderer.screen.height)
     pauseMenuBG.endFill()
     
     oyunbitis2.addChild(pauseMenuBG)
-    oyunbitis2.addChild(bgPng)
+//     oyunbitis2.addChild(bgPng)
     oyunbitis2.addChild(home)
     oyunbitis2.addChild(restart)
 
@@ -135,7 +135,7 @@ function start(){
     let restart = new PIXI.Sprite(textureButton)
     let home = new PIXI.Sprite(textureButton2)
     let pauseMenuBG = new PIXI.Graphics();
-    let bgPng = new PIXI.Sprite(bg)
+//     let bgPng = new PIXI.Sprite(bg)
     let alpha = new PIXI.filters.AlphaFilter(0.2)
     result.anchor.set(0.5, 0.5)
     result.position.set(app.renderer.screen.width/2,app.renderer.screen.height/2-80)
@@ -151,15 +151,15 @@ function start(){
     home.interactive = true
     home.x = app.renderer.screen.width/2 +50
     home.y = app.renderer.screen.height/2
-    bgPng.anchor.set(0.5, 0.5)
-    bgPng.position.set(app.renderer.screen.width/2,app.renderer.screen.height/2)
+//     bgPng.anchor.set(0.5, 0.5)
+//     bgPng.position.set(app.renderer.screen.width/2,app.renderer.screen.height/2)
     pauseMenuBG.beginFill(0xf7931e)
     pauseMenuBG.filters = [alpha]
     pauseMenuBG.drawRect(0, 0, app.renderer.screen.width, app.renderer.screen.height)
     pauseMenuBG.endFill()
     
     oyunbitis.addChild(pauseMenuBG)
-    oyunbitis.addChild(bgPng)
+//     oyunbitis.addChild(bgPng)
     oyunbitis.addChild(result)
     oyunbitis.addChild(home)
     oyunbitis.addChild(restart)
