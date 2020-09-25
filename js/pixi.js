@@ -1,7 +1,7 @@
 let loader;
 async function onStart(){
    loader = PIXI.Loader.shared
-   await loader.add("patlama","images/patlama.png");
+//    await loader.add("patlama","images/patlama.png");
    await loader.add("restart","images/restart.png");
    await loader.add("home","images/home.png");
     console.log("yüklendi 2")
