@@ -1,3 +1,12 @@
+let loader;
+function onStart(){
+    loader = PIXI.Loader.shared
+    loader.add("patlama","images/patlama.png");
+    loader.add("restart","images/restart.png");
+    loader.add("home","images/home.png");
+    console.log("yüklendi")
+}
+
 function start(){
     document.getElementById("giris").style.display = "none"
     const app = new PIXI.Application({ backgroundColor: 0xffbb37 });
@@ -69,9 +78,9 @@ function start(){
         return tiles.children[tiles.children.length-1].y+400 == app.renderer.screen.height
     }
     function stopScreen(){
-        let textureButton = new PIXI.Texture.from('images/restart.png')
-        let textureButton2 = new PIXI.Texture.from('images/home.png')
-        let bg = new PIXI.Texture.from('images/patlama.png')
+        let textureButton = new PIXI.Texture.from(loader.resources["restart"].url)
+        let textureButton2 = new PIXI.Texture.from(loader.resources["home"].url)
+        let bg = new PIXI.Texture.from(loader.resources["patlama"].url)
         let restart = new PIXI.Sprite(textureButton)
         let home = new PIXI.Sprite(textureButton2)
         let pauseMenuBG = new PIXI.Graphics();
@@ -120,9 +129,9 @@ function start(){
         var oyunbitis = new PIXI.Container()
     
     var result = new PIXI.Text("Skor: "+ skorPuan.text,{fontFamily : 'Galiver', fontSize: 40, fill : 0x111 });
-    let textureButton = new PIXI.Texture.from('images/restart.png')
-    let textureButton2 = new PIXI.Texture.from('images/home.png')
-    let bg = new PIXI.Texture.from('images/patlama.png')
+    let textureButton = new PIXI.Texture.from(loader.resources["restart"].url)
+    let textureButton2 = new PIXI.Texture.from(loader.resources["home"].url)
+    let bg = new PIXI.Texture.from(loader.resources["patlama"].url)
     let restart = new PIXI.Sprite(textureButton)
     let home = new PIXI.Sprite(textureButton2)
     let pauseMenuBG = new PIXI.Graphics();
