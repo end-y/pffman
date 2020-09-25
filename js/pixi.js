@@ -80,7 +80,7 @@ function start(){
     function stopScreen(){
         let textureButton = new PIXI.Texture.from(loader.resources["restart"].url)
         let textureButton2 = new PIXI.Texture.from(loader.resources["home"].url)
-        let bg = new PIXI.Texture.from(loader.resources["patlama"].url)
+//         let bg = new PIXI.Texture.from(loader.resources["patlama"].url)
         let restart = new PIXI.Sprite(textureButton)
         let home = new PIXI.Sprite(textureButton2)
         let pauseMenuBG = new PIXI.Graphics();
@@ -131,7 +131,7 @@ function start(){
     var result = new PIXI.Text("Skor: "+ skorPuan.text,{fontFamily : 'Galiver', fontSize: 40, fill : 0x111 });
     let textureButton = new PIXI.Texture.from(loader.resources["restart"].url)
     let textureButton2 = new PIXI.Texture.from(loader.resources["home"].url)
-    let bg = new PIXI.Texture.from(loader.resources["patlama"].url)
+//     let bg = new PIXI.Texture.from(loader.resources["patlama"].url)
     let restart = new PIXI.Sprite(textureButton)
     let home = new PIXI.Sprite(textureButton2)
     let pauseMenuBG = new PIXI.Graphics();
