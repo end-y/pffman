@@ -1,24 +1,18 @@
-const app = new PIXI.Application({ backgroundColor: 0xffbb37 });
-
-app.loader.add("character","images/characters.png");
-app.loader.add("bomb","images/bomb.png");
-app.loader.add("patlama","images/patlama.png");
-app.loader.add("restart","images/restart.png");
-app.loader.add("home","images/home.png")
+let app
 function onStart(){
-    const app = new PIXI.Application({ backgroundColor: 0xffbb37 });
-
-app.loader.add("character","images/characters.png");
-app.loader.add("bomb","images/bomb.png");
-app.loader.add("patlama","images/patlama.png");
-app.loader.add("restart","images/restart.png");
-app.loader.add("home","images/home.png")
-}
-function start(){
-    
-    
-
+    app = new PIXI.Application({ backgroundColor: 0xffbb37 });
+    app.loader.add("character","images/characters.png");
+    app.loader.add("bomb","images/bomb.png");
+    app.loader.add("patlama","images/patlama.png");
+    app.loader.add("restart","images/restart.png");
+    app.loader.add("home","images/home.png")
     document.querySelector("#game").appendChild(app.view);
+    document.querySelector("#game").style.display ="none"
+    console.log("yüklendi")
+}
+
+function start(){
+    document.querySelector("#game").style.display ="block"
     document.getElementById("giris").style.display = "none"
     
     let sayi = 3
@@ -121,10 +115,9 @@ function start(){
 
     
     restart.on("click", () => {
-        // // app.destroy();
-        // // document.body.children[2].removeChild(document.body.children[2].children[0]) 
-        // start() 
-        
+        onStart()
+        document.body.children[2].removeChild(document.body.children[2].children[0])
+        start()
     })
     home.on("click", () => {
         app.destroy();
@@ -172,13 +165,9 @@ function start(){
     app.stage.addChild(oyunbitis)
     
     restart.on("click", () => {
-        // // app.destroy();
-        // // document.body.children[2].removeChild(document.body.children[2].children[0]) 
-        // console.log("çalıştı")
-        // onStart()
-        // setTimeout(() => {
-        //     start()    
-        // }, 500);
+        onStart()
+        document.body.children[2].removeChild(document.body.children[2].children[0])
+        start()
     })
     home.on("click", () => {
         app.destroy();
