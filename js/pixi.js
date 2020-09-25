@@ -1,7 +1,26 @@
-function start(){
-    document.getElementById("giris").style.display = "none"
+const app = new PIXI.Application({ backgroundColor: 0xffbb37 });
+
+app.loader.add("character","images/characters.png");
+app.loader.add("bomb","images/bomb.png");
+app.loader.add("patlama","images/patlama.png");
+app.loader.add("restart","images/restart.png");
+app.loader.add("home","images/home.png")
+function onStart(){
     const app = new PIXI.Application({ backgroundColor: 0xffbb37 });
+
+app.loader.add("character","images/characters.png");
+app.loader.add("bomb","images/bomb.png");
+app.loader.add("patlama","images/patlama.png");
+app.loader.add("restart","images/restart.png");
+app.loader.add("home","images/home.png")
+}
+function start(){
+    
+    
+
     document.querySelector("#game").appendChild(app.view);
+    document.getElementById("giris").style.display = "none"
+    
     let sayi = 3
     var tiles = new PIXI.Container();
     let a = 0
@@ -43,8 +62,7 @@ function start(){
     
     document.querySelector("#game").addEventListener("pointerdown", sendPuff)
     
-    app.loader.add("character","images/characters.png");
-    app.loader.add("bomb","images/bomb.png");
+    
     app.loader.load(doneLoading);
     app.loader.load(sure)
     
@@ -69,9 +87,9 @@ function start(){
         return tiles.children[tiles.children.length-1].y+400 == app.renderer.screen.height
     }
     function stopScreen(){
-        let textureButton = new PIXI.Texture.from('images/restart.png')
-        let textureButton2 = new PIXI.Texture.from('images/home.png')
-        let bg = new PIXI.Texture.from('images/patlama.png')
+        let textureButton = new PIXI.Texture.from(app.loader.resources["restart"].url)
+        let textureButton2 = new PIXI.Texture.from(app.loader.resources["home"].url)
+        let bg = new PIXI.Texture.from(app.loader.resources["patlama"].url)
         let restart = new PIXI.Sprite(textureButton)
         let home = new PIXI.Sprite(textureButton2)
         let pauseMenuBG = new PIXI.Graphics();
@@ -103,9 +121,9 @@ function start(){
 
     
     restart.on("click", () => {
-        app.destroy();
-        document.body.children[2].removeChild(document.body.children[2].children[0]) 
-        start() 
+        // // app.destroy();
+        // // document.body.children[2].removeChild(document.body.children[2].children[0]) 
+        // start() 
         
     })
     home.on("click", () => {
@@ -117,9 +135,9 @@ function start(){
         var oyunbitis = new PIXI.Container()
     
     var result = new PIXI.Text("Skor: "+ skorPuan.text,{fontFamily : 'Galiver', fontSize: 40, fill : 0x111 });
-    let textureButton = new PIXI.Texture.from('images/restart.png')
-    let textureButton2 = new PIXI.Texture.from('images/home.png')
-    let bg = new PIXI.Texture.from('images/patlama.png')
+    let textureButton = new PIXI.Texture.from(app.loader.resources["restart"].url)
+    let textureButton2 = new PIXI.Texture.from(app.loader.resources["home"].url)
+    let bg = new PIXI.Texture.from(app.loader.resources["patlama"].url)
     let restart = new PIXI.Sprite(textureButton)
     let home = new PIXI.Sprite(textureButton2)
     let pauseMenuBG = new PIXI.Graphics();
@@ -154,10 +172,13 @@ function start(){
     app.stage.addChild(oyunbitis)
     
     restart.on("click", () => {
-        app.destroy();
-        document.body.children[2].removeChild(document.body.children[2].children[0]) 
-        start() 
-        
+        // // app.destroy();
+        // // document.body.children[2].removeChild(document.body.children[2].children[0]) 
+        // console.log("çalıştı")
+        // onStart()
+        // setTimeout(() => {
+        //     start()    
+        // }, 500);
     })
     home.on("click", () => {
         app.destroy();
