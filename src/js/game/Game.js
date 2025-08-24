@@ -157,10 +157,15 @@ export class Game {
   checkCollisions() {
     // Puff-bomba çarpışması kontrolü
     const puffs = this.puffManager.getPuffs();
-    for (const puff of puffs) {
-      if (this.bomb.sprite && checkCollision(puff, this.bomb.sprite)) {
-        this.onBombHit();
-        break;
+    const bombCollisionBox = this.bomb.getCollisionBox();
+
+    if (bombCollisionBox) {
+      for (const puff of puffs) {
+        const puffBounds = puff.getBounds();
+        if (checkCollision(puffBounds, bombCollisionBox)) {
+          this.onBombHit();
+          break;
+        }
       }
     }
   }
@@ -177,10 +182,10 @@ export class Game {
     const randomIndex = getRandomIndex(platforms.length);
     const platform = platforms[randomIndex];
 
-    // Bombayı platformun ortasına ve üstüne yerleştir
+    // Bombayı platformun ortasına yerleştir (anchor y=1 olduğu için platform üstüne tam oturur)
     this.bomb.create(
       platform.hitArea.x + platform.hitArea.width / 2,
-      platform.hitArea.y - 30
+      platform.hitArea.y
     );
   }
 

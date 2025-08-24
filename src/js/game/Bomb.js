@@ -25,14 +25,64 @@ export class Bomb {
     }
 
     this.sprite = new PIXI.AnimatedSprite(this.bombSheet.bomb);
-    this.sprite.anchor.set(0.5);
+    this.sprite.anchor.set(0.5, 1); // Y anchor'u 1 yaparak bombanın alt kısmını referans al
     this.sprite.animationSpeed = 10;
     this.sprite.loop = true;
     this.sprite.x = x;
     this.sprite.y = y;
-    this.sprite.hitArea = new PIXI.Rectangle(x, y, 100, 100);
+
+    // HitArea'yı sprite boyutlarına göre ayarla ve pozisyonu takip et
+    this.updateHitArea();
 
     this.app.stage.addChild(this.sprite);
+
+    // Debug için bomba çarpışma kutusunu göster (isteğe bağlı)
+    // this.createDebugBox();
+  }
+
+  // Debug amaçlı - bomba çarpışma kutusunu görsel olarak gösterir
+  createDebugBox() {
+    this.debugBox = new PIXI.Graphics();
+    this.debugBox.lineStyle(2, 0x00ff00, 1);
+    this.debugBox.drawRect(0, 0, 1, 1);
+    this.app.stage.addChild(this.debugBox);
+    this.updateDebugBox();
+  }
+
+  // Debug kutusu güncelleme
+  updateDebugBox() {
+    if (this.debugBox && this.sprite) {
+      const bounds = this.sprite.getBounds();
+      this.debugBox.clear();
+      this.debugBox.lineStyle(2, 0x00ff00, 1);
+      this.debugBox.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
+    }
+  }
+
+  // Bombanın çarpışma alanını güncelle
+  updateHitArea() {
+    if (this.sprite) {
+      const bounds = this.sprite.getBounds();
+      this.sprite.hitArea = new PIXI.Rectangle(
+        bounds.x,
+        bounds.y,
+        bounds.width,
+        bounds.height
+      );
+    }
+  }
+
+  // Bombanın çarpışma kutusunu döndür
+  getCollisionBox() {
+    if (!this.sprite) return null;
+
+    const bounds = this.sprite.getBounds();
+    return {
+      x: bounds.x,
+      y: bounds.y,
+      width: bounds.width,
+      height: bounds.height,
+    };
   }
 
   destroy() {
