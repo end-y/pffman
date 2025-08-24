@@ -182,11 +182,17 @@ export class Game {
     const randomIndex = getRandomIndex(platforms.length);
     const platform = platforms[randomIndex];
 
-    // Bombayı platformun ortasına yerleştir (anchor y=1 olduğu için platform üstüne tam oturur)
-    this.bomb.create(
-      platform.hitArea.x + platform.hitArea.width / 2,
-      platform.hitArea.y
-    );
+    // Config'den bomba yerleştirme ayarlarını al
+    const bombConfig = GameConfig.BOMB.PLACEMENT;
+
+    // Platform üzerinde rastgele X pozisyonu (platform kenarlarından biraz içeride)
+    const margin = bombConfig.MARGIN_FROM_EDGE;
+    const minX = platform.hitArea.x + margin;
+    const maxX = platform.hitArea.x + platform.hitArea.width - margin;
+    const randomX = minX + Math.random() * (maxX - minX);
+
+    // Y konumu hep platform üzerinde sabit
+    this.bomb.create(randomX, platform.hitArea.y);
   }
 
   sendPuff() {

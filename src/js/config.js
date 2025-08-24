@@ -33,6 +33,9 @@ export const GameConfig = {
   BOMB: {
     SPRITE_WIDTH: 48,
     SPRITE_HEIGHT: 42,
+    PLACEMENT: {
+      MARGIN_FROM_EDGE: 20, // Platform kenarlarından uzaklık
+    },
   },
 
   // Puff ayarları
