@@ -114,16 +114,16 @@ export class Game {
   }
 
   handleInput() {
-    if (this.keys[GameConfig.KEYS.JUMP] && !this.player.isJumping) {
-      this.player.jump();
-    }
-
+    // Hareket kontrolleri - sürekli basılı tutma destekli
     if (this.keys[GameConfig.KEYS.LEFT]) {
       this.player.moveLeft();
-    }
-
-    if (this.keys[GameConfig.KEYS.RIGHT]) {
+    } else if (this.keys[GameConfig.KEYS.RIGHT]) {
       this.player.moveRight();
+    } else {
+      // Hiçbir yön tuşu basılı değilse yavaşla
+      if (!this.player.isJumping) {
+        this.player.character.vx *= GameConfig.PHYSICS.GROUND_FRICTION;
+      }
     }
   }
 
@@ -202,11 +202,24 @@ export class Game {
   }
 
   onKeyDown(e) {
-    this.keys[e.keyCode] = true;
+    // Eğer tuş daha önce basılı değilse (ilk basışsa)
+    if (!this.keys[e.keyCode]) {
+      this.keys[e.keyCode] = true;
+
+      // Zıplama tuşuna ilk basıldığında
+      if (e.keyCode === GameConfig.KEYS.JUMP) {
+        this.player.onJumpKeyPress();
+      }
+    }
   }
 
   onKeyUp(e) {
     this.keys[e.keyCode] = false;
+
+    // Zıplama tuşu bırakıldığında
+    if (e.keyCode === GameConfig.KEYS.JUMP) {
+      this.player.onJumpKeyRelease();
+    }
   }
 
   onKeyPress(e) {

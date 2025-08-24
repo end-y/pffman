@@ -13,6 +13,12 @@ export class Player {
     this.sprite = null;
     this.playerSheet = {};
     this.isJumping = true;
+
+    // Gelişmiş zıplama için yeni özellikler
+    this.coyoteTimer = 0; // Platform kenarından düştükten sonra zıplama süresi
+    this.jumpBuffer = 0; // Zıplama tuşuna erken basma süresi
+    this.lastGroundedTime = 0; // Son yerde olma zamanı
+    this.jumpKeyPressed = false; // Zıplama tuşu durumu
   }
 
   createPlayerSheet() {
@@ -109,41 +115,138 @@ export class Player {
     };
   }
 
-  jump() {
-    if (!this.isJumping) {
-      this.character.vy -= GameConfig.PLAYER.JUMP_FORCE;
-      this.sprite.y += this.character.vy;
-      this.isJumping = true;
+  // Zıplama tuşuna basıldığında çağrılır
+  onJumpKeyPress() {
+    this.jumpKeyPressed = true;
+    this.jumpBuffer = GameConfig.PLAYER.JUMP_BUFFER;
+    this.attemptJump();
+  }
+
+  // Zıplama tuşu bırakıldığında çağrılır
+  onJumpKeyRelease() {
+    this.jumpKeyPressed = false;
+    // Erken bırakılırsa zıplama gücünü azalt (değişken yükseklik zıplama)
+    if (this.character.vy < 0) {
+      this.character.vy *= 0.5;
     }
+  }
+
+  // Zıplama girişimi
+  attemptJump() {
+    const currentTime = Date.now();
+    const canCoyoteJump =
+      currentTime - this.lastGroundedTime < GameConfig.PLAYER.COYOTE_TIME;
+
+    if (!this.isJumping || canCoyoteJump) {
+      this.performJump();
+      return true;
+    }
+    return false;
+  }
+
+  // Gerçek zıplama eylemi
+  performJump() {
+    this.character.vy = -GameConfig.PLAYER.JUMP_FORCE;
+    this.isJumping = true;
+    this.coyoteTimer = 0;
+    this.jumpBuffer = 0;
+
+    // Zıplama animasyonu
+    this.setJumpAnimation();
+  }
+
+  // Zıplama animasyonu ayarla
+  setJumpAnimation() {
+    const direction = this.getCurrentDirection();
+    if (direction === "left") {
+      this.sprite.textures = this.playerSheet.jumpleft;
+    } else {
+      this.sprite.textures = this.playerSheet.jumpright;
+    }
+    this.sprite.play();
   }
 
   moveLeft() {
-    if (!this.sprite.playing) {
+    const moveSpeed = this.isJumping
+      ? GameConfig.PLAYER.MOVE_SPEED * GameConfig.PLAYER.AIR_CONTROL
+      : GameConfig.PLAYER.MOVE_SPEED;
+
+    // Havada değilse yürüme animasyonu göster
+    if (!this.isJumping && !this.sprite.playing) {
       this.sprite.textures = this.playerSheet.walkLeft;
       this.sprite.play();
     }
-    this.sprite.x -= GameConfig.PLAYER.MOVE_SPEED;
+
+    this.character.vx = -moveSpeed;
   }
 
   moveRight() {
-    if (!this.sprite.playing) {
+    const moveSpeed = this.isJumping
+      ? GameConfig.PLAYER.MOVE_SPEED * GameConfig.PLAYER.AIR_CONTROL
+      : GameConfig.PLAYER.MOVE_SPEED;
+
+    // Havada değilse yürüme animasyonu göster
+    if (!this.isJumping && !this.sprite.playing) {
       this.sprite.textures = this.playerSheet.walkRight;
       this.sprite.play();
     }
-    this.sprite.x += GameConfig.PLAYER.MOVE_SPEED;
+
+    this.character.vx = moveSpeed;
   }
 
   updatePhysics() {
+    // Yerçekimi uygula
     this.character.vy += GameConfig.PHYSICS.GRAVITY;
+
+    // Maksimum düşme hızını sınırla
+    if (this.character.vy > GameConfig.PLAYER.MAX_FALL_SPEED) {
+      this.character.vy = GameConfig.PLAYER.MAX_FALL_SPEED;
+    }
+
+    // Pozisyon güncelle
     this.sprite.y += this.character.vy;
     this.sprite.x += this.character.vx;
+
+    // Sürtünme ve hava direnci uygula
+    if (this.isJumping) {
+      // Havada hava direnci
+      this.character.vx *= GameConfig.PHYSICS.AIR_RESISTANCE;
+    } else {
+      // Yerde sürtünme
+      this.character.vx *= GameConfig.PHYSICS.GROUND_FRICTION;
+    }
+
+    // Timer'ları güncelle
+    this.updateTimers();
+  }
+
+  updateTimers() {
+    const deltaTime = 16; // Yaklaşık 60 FPS
+
+    if (this.coyoteTimer > 0) {
+      this.coyoteTimer -= deltaTime;
+    }
+
+    if (this.jumpBuffer > 0) {
+      this.jumpBuffer -= deltaTime;
+      // Eğer buffer süresi varsa ve şimdi zıplayabilir durumda isek, zıpla
+      if (!this.isJumping && this.jumpBuffer > 0) {
+        this.performJump();
+      }
+    }
   }
 
   landOnPlatform() {
     this.character.vy = 0;
-    this.character.vx = 0;
     this.isJumping = false;
     this.sprite.jumping = false;
+    this.lastGroundedTime = Date.now();
+    this.coyoteTimer = GameConfig.PLAYER.COYOTE_TIME;
+
+    // Eğer jump buffer varsa hemen zıpla
+    if (this.jumpBuffer > 0) {
+      this.performJump();
+    }
   }
 
   wrapAroundScreen() {

@@ -9,15 +9,21 @@ export const GameConfig = {
   PLAYER: {
     START_X: 150,
     START_Y: 200,
-    JUMP_FORCE: 5.5,
-    MOVE_SPEED: 2,
+    JUMP_FORCE: 8.5, // Daha güçlü zıplama
+    MOVE_SPEED: 2.5, // Biraz daha hızlı hareket
+    AIR_CONTROL: 0.8, // Havadayken hareket kontrolü (%80)
     SPRITE_WIDTH: 50.5,
     SPRITE_HEIGHT: 74,
+    MAX_FALL_SPEED: 12, // Maksimum düşme hızı
+    COYOTE_TIME: 150, // Platform kenarından sonra zıplama süresi (ms)
+    JUMP_BUFFER: 100, // Zıplama tuşuna erken basma toleransı (ms)
   },
 
   // Fizik ayarları
   PHYSICS: {
-    GRAVITY: 0.1,
+    GRAVITY: 0.35, // Daha güçlü yerçekimi
+    AIR_RESISTANCE: 0.98, // Havada yavaşlama
+    GROUND_FRICTION: 0.85, // Yerde sürtünme
   },
 
   // Platform ayarları
