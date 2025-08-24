@@ -68,6 +68,45 @@ export class Player {
 
     this.app.stage.addChild(this.sprite);
     this.sprite.play();
+
+    // Debug için ayak çarpışma kutusunu göster (isteğe bağlı)
+    // this.createDebugFootBox();
+  }
+
+  // Debug amaçlı - ayak çarpışma kutusunu görsel olarak gösterir
+  createDebugFootBox() {
+    this.debugFootBox = new PIXI.Graphics();
+    this.debugFootBox.lineStyle(2, 0xff0000, 1);
+    this.debugFootBox.drawRect(0, 0, 1, 1);
+    this.app.stage.addChild(this.debugFootBox);
+  }
+
+  // Debug kutusu güncelleme
+  updateDebugFootBox() {
+    if (this.debugFootBox) {
+      const footBox = this.getFootCollisionBox();
+      this.debugFootBox.clear();
+      this.debugFootBox.lineStyle(2, 0xff0000, 1);
+      this.debugFootBox.drawRect(
+        footBox.x,
+        footBox.y,
+        footBox.width,
+        footBox.height
+      );
+    }
+  }
+
+  // Player'ın ayak çarpışma alanını döndürür
+  getFootCollisionBox() {
+    const footHeight = 5; // Ayak yüksekliği (daha ince)
+    const footWidth = this.sprite.width * 0.7; // Sprite genişliğinin %70'i
+
+    return {
+      x: this.sprite.x - footWidth / 2,
+      y: this.sprite.y + this.sprite.height / 2 - footHeight,
+      width: footWidth,
+      height: footHeight,
+    };
   }
 
   jump() {

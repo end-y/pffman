@@ -108,6 +108,9 @@ export class Game {
     this.checkCollisions();
     this.puffManager.updatePuffs(this.player);
     this.checkGameOver();
+
+    // Debug kutusu güncelle (eğer aktifse)
+    // this.player.updateDebugFootBox();
   }
 
   handleInput() {
@@ -125,15 +128,22 @@ export class Game {
   }
 
   updatePhysics() {
-    // Platform çarpışmalarını kontrol et
+    // Platform çarpışmalarını kontrol et - sadece ayak çarpışma alanını kullan
     let onPlatform = false;
     const platforms = this.platformManager.getPlatforms();
+    const playerFootBox = this.player.getFootCollisionBox();
 
     for (const platform of platforms) {
-      if (checkCollision(platform.hitArea, this.player.sprite)) {
-        this.player.landOnPlatform();
-        onPlatform = true;
-        break;
+      if (checkCollision(playerFootBox, platform.hitArea)) {
+        // Sadece aşağıya düşerken platform üzerine çıkabilir
+        if (this.player.character.vy > 0) {
+          // Player'ı platform üzerine yerleştir
+          this.player.sprite.y =
+            platform.hitArea.y - this.player.sprite.height / 2;
+          this.player.landOnPlatform();
+          onPlatform = true;
+          break;
+        }
       }
     }
 
@@ -167,7 +177,11 @@ export class Game {
     const randomIndex = getRandomIndex(platforms.length);
     const platform = platforms[randomIndex];
 
-    this.bomb.create(platform.hitArea.x + 70, platform.hitArea.y - 70);
+    // Bombayı platformun ortasına ve üstüne yerleştir
+    this.bomb.create(
+      platform.hitArea.x + platform.hitArea.width / 2,
+      platform.hitArea.y - 30
+    );
   }
 
   sendPuff() {

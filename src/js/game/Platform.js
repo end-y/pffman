@@ -23,7 +23,8 @@ export class PlatformManager {
   addPlatform(x, y, width, height) {
     const platform = new PIXI.Graphics();
     platform.beginFill(0x2c3e50);
-    platform.hitArea = new PIXI.Rectangle(x + 50, y + 50, 120, 20);
+    // HitArea'yı platform boyutlarıyla tam olarak eşleştir
+    platform.hitArea = new PIXI.Rectangle(x, y, width, height);
     platform.drawRoundedRect(x, y, width, height, 10);
     platform.endFill();
 
