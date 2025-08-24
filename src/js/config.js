@@ -3,13 +3,16 @@ export const GameConfig = {
   // Ekran ayarları
   SCREEN: {
     BACKGROUND_COLOR: 0xffbb37,
+    WIDTH: 800,
+    HEIGHT: 600,
+    BOUNDARY_MARGIN: 50, // Kamera dışına çıkma toleransı
   },
 
   // Oyuncu ayarları
   PLAYER: {
-    START_X: 150,
-    START_Y: 200,
-    JUMP_FORCE: 8.5, // Daha güçlü zıplama
+    START_X: 400, // Merkez platform üzerinde
+    START_Y: 450, // İlk platform seviyesi (artırılmış aralığa uygun)
+    JUMP_FORCE: 11.0, // Çok güçlü zıplama (maksimum artış)
     MOVE_SPEED: 2.5, // Biraz daha hızlı hareket
     AIR_CONTROL: 0.8, // Havadayken hareket kontrolü (%80)
     SPRITE_WIDTH: 50.5,
@@ -26,14 +29,55 @@ export const GameConfig = {
     GROUND_FRICTION: 0.85, // Yerde sürtünme
   },
 
-  // Platform ayarları
+  // Platform ayarları - Başlangıç platformları (pattern uyumlu)
   PLATFORMS: [
-    { x: 100, y: 400, width: 150, height: 20 },
-    { x: 525, y: 400, width: 150, height: 20 },
-    { x: 315, y: 250, width: 150, height: 20 },
-    { x: 100, y: 100, width: 150, height: 20 },
-    { x: 525, y: 100, width: 150, height: 20 },
+    { x: 340, y: 500, width: 120, height: 20 }, // Başlangıç - merkez
+    { x: 200, y: 430, width: 120, height: 20 }, // Sol (merkeze yakın)
+    { x: 480, y: 360, width: 120, height: 20 }, // Sağ (merkeze yakın)
+    { x: 200, y: 290, width: 120, height: 20 }, // Sol (merkeze yakın)
+    { x: 480, y: 220, width: 120, height: 20 }, // Sağ (merkeze yakın)
+    { x: 340, y: 150, width: 120, height: 20 }, // Merkez
   ],
+
+  // Dinamik platform üretimi ayarları
+  PLATFORM_GENERATION: {
+    SCREEN_WIDTH: 800, // Ekran genişliği
+    SCREEN_HEIGHT: 600, // Ekran yüksekliği
+    PLATFORM_WIDTH: 120, // Sabit platform genişliği
+    PLATFORM_HEIGHT: 20, // Platform yüksekliği
+    VERTICAL_SPACING: 70, // Sabit dikey aralık (normal)
+    PLATFORMS_AHEAD: 8, // Oyuncunun önünde kaç platform olsun
+    GENERATION_TRIGGER_DISTANCE: 300, // Bu mesafede yeni platform üret
+
+    // Pattern sistemi
+    PATTERNS: [
+      // Zigzag pattern - ana pattern
+      {
+        name: "zigzag",
+        positions: ["left", "right", "left", "right"],
+        weight: 4,
+      },
+      // Merkez-kenar pattern
+      {
+        name: "center_edge",
+        positions: ["center", "left", "center", "right"],
+        weight: 2,
+      },
+      // Üçlü pattern
+      {
+        name: "triple",
+        positions: ["left", "center", "right", "center"],
+        weight: 2,
+      },
+    ],
+
+    // Pozisyon tanımları
+    POSITIONS: {
+      left: 200, // Sol kenar pozisyonu (merkeze yaklaştırıldı)
+      center: 340, // Merkez pozisyonu (400 - 120/2)
+      right: 480, // Sağ kenar pozisyonu (merkeze yaklaştırıldı)
+    },
+  },
 
   // Bomba ayarları
   BOMB: {

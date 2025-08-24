@@ -1,0 +1,47 @@
+{
+  "id": 3,
+  "name": "Uzman Seviyesi",
+  "description": "Sadece uzmanlar için - dar platformlar",
+  "difficulty": "hard",
+  "timer": 30000,
+  "platforms": [
+    { "x": 50, "y": 500, "width": 80, "height": 20 },
+    { "x": 400, "y": 410, "width": 80, "height": 20 },
+    { "x": 670, "y": 320, "width": 80, "height": 20 },
+    { "x": 200, "y": 230, "width": 80, "height": 20 },
+    { "x": 520, "y": 140, "width": 80, "height": 20 },
+    { "x": 350, "y": 50, "width": 80, "height": 20 }
+  ],
+  "player": {
+    "startX": 90,
+    "startY": 450,
+    "jumpForce": 12.0,
+    "moveSpeed": 2.0
+  },
+  "generation": {
+    "verticalSpacing": 90,
+    "patterns": [
+      {
+        "name": "extreme_zigzag",
+        "positions": ["far_left", "far_right", "far_left", "far_right"],
+        "weight": 4
+      },
+      {
+        "name": "center_challenge",
+        "positions": ["center", "far_left", "far_right", "center"],
+        "weight": 3
+      }
+    ],
+    "positions": {
+      "far_left": 100,
+      "center": 360,
+      "far_right": 620
+    }
+  },
+  "scoring": {
+    "bombPoints": 5,
+    "heightPoints": 0.2,
+    "timeBonus": true
+  },
+  "nextLevel": null
+}

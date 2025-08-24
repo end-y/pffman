@@ -1,8 +1,8 @@
 import { Game } from "./game/Game.js";
 
 // Global start fonksiyonu - HTML'den çağrılır
-window.start = async function () {
-  const game = new Game();
+window.start = async function (levelId = 1) {
+  const game = new Game(levelId);
   await game.initialize();
 };
 

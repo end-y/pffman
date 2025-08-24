@@ -1,0 +1,47 @@
+{
+  "id": 1,
+  "name": "Başlangıç",
+  "description": "İlk seviye - temel platformlar",
+  "difficulty": "easy",
+  "timer": 60000,
+  "platforms": [
+    { "x": 340, "y": 500, "width": 120, "height": 20 },
+    { "x": 200, "y": 430, "width": 120, "height": 20 },
+    { "x": 480, "y": 360, "width": 120, "height": 20 },
+    { "x": 200, "y": 290, "width": 120, "height": 20 },
+    { "x": 480, "y": 220, "width": 120, "height": 20 },
+    { "x": 340, "y": 150, "width": 120, "height": 20 }
+  ],
+  "player": {
+    "startX": 400,
+    "startY": 450,
+    "jumpForce": 11.0,
+    "moveSpeed": 2.5
+  },
+  "generation": {
+    "verticalSpacing": 70,
+    "patterns": [
+      {
+        "name": "zigzag",
+        "positions": ["left", "right", "left", "right"],
+        "weight": 4
+      },
+      {
+        "name": "center_edge",
+        "positions": ["center", "left", "center", "right"],
+        "weight": 2
+      }
+    ],
+    "positions": {
+      "left": 200,
+      "center": 340,
+      "right": 480
+    }
+  },
+  "scoring": {
+    "bombPoints": 1,
+    "heightPoints": 0.1,
+    "timeBonus": true
+  },
+  "nextLevel": 2
+}

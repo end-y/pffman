@@ -48,12 +48,24 @@ export class UIComponents {
     });
   }
 
-  static createGameOverScreen(app, score, onRestart, onHome) {
+  static createGameOverScreen(app, score, reason, onRestart, onHome) {
     const container = new PIXI.Container();
 
     // Arka plan
     const bg = this.createBackground(app);
     const explosionBg = this.createExplosionBackground(app);
+
+    // Oyun bitiş sebebi metni
+    const reasonText = new PIXI.Text(reason, {
+      fontFamily: "Galiver",
+      fontSize: 32,
+      fill: 0xff0000,
+    });
+    reasonText.anchor.set(0.5, 0.5);
+    reasonText.position.set(
+      app.renderer.screen.width / 2,
+      app.renderer.screen.height / 2 - 120
+    );
 
     // Skor metni
     const scoreText = this.createScoreText(score);
@@ -87,6 +99,7 @@ export class UIComponents {
     // Container'a ekle
     container.addChild(bg);
     container.addChild(explosionBg);
+    container.addChild(reasonText);
     container.addChild(scoreText);
     container.addChild(restartButton);
     container.addChild(homeButton);

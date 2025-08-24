@@ -1,0 +1,52 @@
+{
+  "id": 2,
+  "name": "Hızlanan Tempo",
+  "description": "Daha hızlı ve zorlayıcı platformlar",
+  "difficulty": "medium",
+  "timer": 45000,
+  "platforms": [
+    { "x": 100, "y": 500, "width": 100, "height": 20 },
+    { "x": 350, "y": 420, "width": 100, "height": 20 },
+    { "x": 600, "y": 340, "width": 100, "height": 20 },
+    { "x": 150, "y": 260, "width": 100, "height": 20 },
+    { "x": 550, "y": 180, "width": 100, "height": 20 },
+    { "x": 300, "y": 100, "width": 100, "height": 20 }
+  ],
+  "player": {
+    "startX": 150,
+    "startY": 450,
+    "jumpForce": 10.5,
+    "moveSpeed": 3.0
+  },
+  "generation": {
+    "verticalSpacing": 80,
+    "patterns": [
+      {
+        "name": "zigzag",
+        "positions": ["left", "right", "left", "right"],
+        "weight": 3
+      },
+      {
+        "name": "triple",
+        "positions": ["left", "center", "right", "center"],
+        "weight": 3
+      },
+      {
+        "name": "wide_jump",
+        "positions": ["left", "right"],
+        "weight": 2
+      }
+    ],
+    "positions": {
+      "left": 150,
+      "center": 350,
+      "right": 550
+    }
+  },
+  "scoring": {
+    "bombPoints": 2,
+    "heightPoints": 0.15,
+    "timeBonus": true
+  },
+  "nextLevel": 3
+}

@@ -3,16 +3,18 @@ import { Player } from "./Player.js";
 import { Bomb } from "./Bomb.js";
 import { PlatformManager } from "./Platform.js";
 import { PuffManager } from "./PuffManager.js";
+import { LevelManager } from "./LevelManager.js";
 import { UIComponents } from "../ui/UIComponents.js";
 import { checkCollision, getRandomIndex, Timer } from "../utils/helpers.js";
 
 export class Game {
-  constructor() {
+  constructor(levelId = 1) {
     this.app = null;
     this.player = null;
     this.bomb = null;
     this.platformManager = null;
     this.puffManager = null;
+    this.levelManager = new LevelManager();
     this.score = 0;
     this.scoreDisplay = null;
     this.timer = null;
@@ -20,11 +22,20 @@ export class Game {
     this.isPaused = false;
     this.pauseScreen = null;
     this.gameOverScreen = null;
+    this.currentLevelId = levelId;
+
+    // Yükseklik tabanlı ilerleyiş takibi
+    this.playerStartY = GameConfig.PLAYER.START_Y;
+    this.highestReachedY = GameConfig.PLAYER.START_Y;
+    this.heightScore = 0;
   }
 
   async initialize() {
     // Giriş ekranını gizle
     document.getElementById("giris").style.display = "none";
+
+    // Level'i yükle ve config'i güncelle
+    await this.loadCurrentLevel();
 
     // PIXI uygulamasını oluştur
     this.app = new PIXI.Application({
@@ -39,6 +50,23 @@ export class Game {
     this.initializeGameComponents();
     this.setupEventListeners();
     this.startGameLoop();
+  }
+
+  async loadCurrentLevel() {
+    const level = await this.levelManager.loadLevel(this.currentLevelId);
+    if (!level) {
+      console.error("Level yüklenemedi, varsayılan ayarlar kullanılıyor");
+      return;
+    }
+
+    // Level ayarlarını GameConfig'e uygula
+    this.levelManager.applyLevelToConfig(GameConfig);
+
+    // Start Y pozisyonunu güncelle
+    this.playerStartY = GameConfig.PLAYER.START_Y;
+    this.highestReachedY = GameConfig.PLAYER.START_Y;
+
+    console.log(`Level ${level.id} başlatılıyor: ${level.name}`);
   }
 
   async loadAssets() {
@@ -109,6 +137,15 @@ export class Game {
     this.puffManager.updatePuffs(this.player);
     this.checkGameOver();
 
+    // Dinamik platform üretimi
+    this.platformManager.generatePlatformsIfNeeded(this.player.sprite.y);
+
+    // Yükseklik skorunu güncelle
+    this.updateHeightScore();
+
+    // Kamera takibi
+    this.updateCamera();
+
     // Debug kutusu güncelle (eğer aktifse)
     // this.player.updateDebugFootBox();
   }
@@ -128,13 +165,17 @@ export class Game {
   }
 
   updatePhysics() {
-    // Platform çarpışmalarını kontrol et - sadece ayak çarpışma alanını kullan
+    // Platform çarpışmalarını kontrol et - sadece ayak çarpışma alanını ve görünür platformları kullan
     let onPlatform = false;
     const platforms = this.platformManager.getPlatforms();
     const playerFootBox = this.player.getFootCollisionBox();
 
     for (const platform of platforms) {
-      if (checkCollision(playerFootBox, platform.hitArea)) {
+      // Sadece görünür (hidden olmayan) platformlarla çarpışma kontrol et
+      if (
+        !platform.isHidden &&
+        checkCollision(playerFootBox, platform.hitArea)
+      ) {
         // Sadece aşağıya düşerken platform üzerine çıkabilir
         if (this.player.character.vy > 0) {
           // Player'ı platform üzerine yerleştir
@@ -172,15 +213,61 @@ export class Game {
 
   onBombHit() {
     this.score++;
-    this.scoreDisplay.updateScore(this.score);
+    this.updateScoreDisplay();
     this.placeBombRandomly();
     this.timer.reset(GameConfig.TIME.GAME_DURATION);
   }
 
+  updateHeightScore() {
+    const currentY = this.player.sprite.y;
+
+    // Eğer oyuncu daha yukarı çıktıysa yükseklik skorunu güncelle
+    if (currentY < this.highestReachedY) {
+      this.highestReachedY = currentY;
+      // Her 10 piksel yukarı çıkma için 1 puan
+      this.heightScore = Math.floor(
+        (this.playerStartY - this.highestReachedY) / 10
+      );
+      this.updateScoreDisplay();
+    }
+  }
+
+  updateScoreDisplay() {
+    const totalScore = this.score + this.heightScore;
+    this.scoreDisplay.updateScore(totalScore);
+  }
+
+  updateCamera() {
+    // Oyuncuyu takip eden kamera sistemi
+    const targetY =
+      this.player.sprite.y - this.app.renderer.screen.height * 0.7;
+    const currentY = this.app.stage.y;
+
+    // Yumuşak kamera takibi
+    const lerpFactor = 0.1;
+    const newY = currentY + (-targetY - currentY) * lerpFactor;
+
+    // Kameranın aşağıya inmemesini engelle (sadece yukarı takip et)
+    if (newY > this.app.stage.y) {
+      this.app.stage.y = newY;
+
+      // Skor display'ini kamera ile birlikte hareket ettir
+      this.scoreDisplay.scoreText.y = -newY + 45;
+      this.scoreDisplay.bombIcon.y = -newY + 40;
+    }
+  }
+
   placeBombRandomly() {
-    const platforms = this.platformManager.getPlatforms();
-    const randomIndex = getRandomIndex(platforms.length);
-    const platform = platforms[randomIndex];
+    // Kamera içindeki platformları filtrele
+    const visiblePlatforms = this.getVisiblePlatforms();
+
+    if (visiblePlatforms.length === 0) {
+      console.warn("Görünür platform bulunamadı!");
+      return;
+    }
+
+    const randomIndex = getRandomIndex(visiblePlatforms.length);
+    const platform = visiblePlatforms[randomIndex];
 
     // Config'den bomba yerleştirme ayarlarını al
     const bombConfig = GameConfig.BOMB.PLACEMENT;
@@ -193,6 +280,33 @@ export class Game {
 
     // Y konumu hep platform üzerinde sabit
     this.bomb.create(randomX, platform.hitArea.y);
+  }
+
+  getVisiblePlatforms() {
+    const platforms = this.platformManager.getPlatforms();
+    const cameraY = -this.app.stage.y;
+    const margin = GameConfig.SCREEN.BOUNDARY_MARGIN;
+
+    // Kamera görüş alanı
+    const topBound = cameraY - margin;
+    const bottomBound = cameraY + GameConfig.SCREEN.HEIGHT + margin;
+    const leftBound = -margin;
+    const rightBound = GameConfig.SCREEN.WIDTH + margin;
+
+    return platforms.filter((platform) => {
+      const platformY = platform.hitArea.y;
+      const platformX = platform.hitArea.x;
+      const platformWidth = platform.hitArea.width;
+
+      // Platform hem kamera içinde hem de gizli değil mi?
+      return (
+        !platform.isHidden &&
+        platformY >= topBound &&
+        platformY <= bottomBound &&
+        platformX + platformWidth >= leftBound &&
+        platformX <= rightBound
+      );
+    });
   }
 
   sendPuff() {
@@ -259,23 +373,83 @@ export class Game {
   }
 
   checkGameOver() {
+    // Ekranın altına düşme kontrolü
     if (this.app.renderer.screen.height + 100 < this.player.sprite.y) {
-      this.endGame();
+      this.endGame("Çok aşağı düştün!");
+      return;
+    }
+
+    // Kamera sınırları kontrolü
+    if (this.checkCameraBounds()) {
+      this.endGame("Sahne dışına çıktın!");
+      return;
+    }
+
+    // Bomba sahne kontrolü
+    if (this.checkBombBounds()) {
+      console.log("Bomba sınır dışı - oyun bitiyor!");
+      this.endGame("Bomba sahne dışına çıktı!");
+      return;
     }
   }
 
-  endGame() {
+  checkCameraBounds() {
+    const player = this.player.sprite;
+    const margin = GameConfig.SCREEN.BOUNDARY_MARGIN;
+    const cameraY = -this.app.stage.y;
+
+    // Sol ve sağ sınırlar
+    const leftBound = -margin;
+    const rightBound = GameConfig.SCREEN.WIDTH + margin;
+
+    // Üst ve alt sınırlar (kamera pozisyonuna göre)
+    const topBound = cameraY - margin;
+    const bottomBound = cameraY + GameConfig.SCREEN.HEIGHT + margin;
+
+    return (
+      player.x < leftBound ||
+      player.x > rightBound ||
+      player.y < topBound ||
+      player.y > bottomBound
+    );
+  }
+
+  checkBombBounds() {
+    if (!this.bomb.sprite) return false;
+
+    const bomb = this.bomb.sprite;
+    const margin = GameConfig.SCREEN.BOUNDARY_MARGIN;
+    const cameraY = -this.app.stage.y;
+
+    // Sol ve sağ sınırlar
+    const leftBound = -margin;
+    const rightBound = GameConfig.SCREEN.WIDTH + margin;
+
+    // Üst ve alt sınırlar (kamera pozisyonuna göre)
+    const topBound = cameraY - margin;
+    const bottomBound = cameraY + GameConfig.SCREEN.HEIGHT + margin;
+
+    return (
+      bomb.x < leftBound ||
+      bomb.x > rightBound ||
+      bomb.y < topBound ||
+      bomb.y > bottomBound
+    );
+  }
+
+  endGame(reason = "Oyun bitti!") {
     this.timer.stop();
-    this.showGameOverScreen();
+    this.showGameOverScreen(reason);
     setTimeout(() => {
       this.app.stop();
     }, 500);
   }
 
-  showGameOverScreen() {
+  showGameOverScreen(reason = "Oyun bitti!") {
     this.gameOverScreen = UIComponents.createGameOverScreen(
       this.app,
       this.score,
+      reason,
       () => this.restart(),
       () => this.goHome()
     );
@@ -284,7 +458,7 @@ export class Game {
 
   async restart() {
     await this.cleanup();
-    const newGame = new Game();
+    const newGame = new Game(this.currentLevelId);
     await newGame.initialize();
   }
 
