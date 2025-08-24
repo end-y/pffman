@@ -1,23 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="js/pixi.min.js"></script>
-    <title>Document</title>
-    <link rel="stylesheet" href="index.css">
-</head>
-<body>
-
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="src/js/pixi.min.js"></script>
+    <title>Puffman - Platform Oyunu</title>
+    <link rel="stylesheet" href="src/css/index.css" />
+  </head>
+  <body>
     <div id="giris">
-        <img src="./images/logo.png" />
-        <div id="start" onclick="start()"><div>Start-></div></div>
+      <img src="./assets/images/logo.png" />
+      <div id="start" onclick="start()"><div>Start-></div></div>
     </div>
-    <div style="font-family: Galiver; text-align: center; margin-right: 80px;">
-    <h3>Nasıl Oynanır?</h3>
-    <p>W ile zıplar, A ile sola gider, D ile sağa gider, sol click ile <br> rüzgar gönderir</p>
+    <div style="font-family: Galiver; text-align: center; margin-right: 80px">
+      <h3>Nasıl Oynanır?</h3>
+      <p>
+        W ile zıplar, A ile sola gider, D ile sağa gider, sol click ile <br />
+        rüzgar gönderir
+      </p>
     </div>
     <div id="game"></div>
-    <script src="js/pixi.js"></script>
-</body>
+    <script type="module" src="src/js/main.js"></script>
+  </body>
 </html>
