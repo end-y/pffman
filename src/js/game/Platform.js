@@ -9,27 +9,61 @@ export class PlatformManager {
     this.highestPlatformY = 0; // En yüksek platformun Y pozisyonu
     this.platformIdCounter = 0; // Platform ID sayacı
 
-    // Pattern sistemi için değişkenler
+    // Pattern sistemi için değişkenler (artık kullanılmayacak)
     this.currentPattern = null;
     this.currentPatternIndex = 0;
     this.patternStepCount = 0;
+
+    // Map sistemi için flagler
+    this.isMapGenerated = false;
+    this.mapPlatforms = [];
+
+    this.app.stage.addChild(this.container);
   }
 
   createPlatforms() {
-    // Başlangıç platformlarını oluştur
-    GameConfig.PLATFORMS.forEach((platformData) => {
-      this.addPlatform(
-        platformData.x,
-        platformData.y,
-        platformData.width,
-        platformData.height
-      );
+    // Yeni map sistemi kullan
+    this.generateMapPlatforms();
+  }
+
+  // Map string'ini parse ederek platformları oluştur
+  generateMapPlatforms() {
+    if (this.isMapGenerated) return;
+
+    const mapConfig = GameConfig.MAP;
+    const levelMap = mapConfig.LEVEL_MAP;
+    const spacing = mapConfig.PLATFORM_SPACING;
+    const size = mapConfig.PLATFORM_SIZE;
+    const startPos = mapConfig.START_POSITION;
+
+    // Map'i ters çevir (en alt seviyeden başla)
+    const reversedMap = [...levelMap].reverse();
+
+    reversedMap.forEach((row, rowIndex) => {
+      // Y pozisyonu hesapla (alt seviyeden başla)
+      const y = startPos.Y - rowIndex * spacing.VERTICAL;
+
+      // Her karakteri kontrol et
+      for (let colIndex = 0; colIndex < row.length; colIndex++) {
+        const char = row[colIndex];
+
+        if (char === "x") {
+          // Platform oluştur
+          // X pozisyonu: merkez etrafında dağıt
+          const totalWidth = (row.length - 1) * spacing.HORIZONTAL;
+          const startX = startPos.X - totalWidth / 2;
+          const x = startX + colIndex * spacing.HORIZONTAL;
+
+          this.addPlatform(x, y, size.WIDTH, size.HEIGHT);
+        }
+      }
     });
 
-    // En yüksek platform Y pozisyonunu bul
+    this.isMapGenerated = true;
     this.updateHighestPlatform();
-
-    this.app.stage.addChild(this.container);
+    console.log(
+      `Map sisteminden ${this.platforms.length} platform oluşturuldu`
+    );
   }
 
   updateHighestPlatform() {
@@ -54,20 +88,13 @@ export class PlatformManager {
     this.platforms.push(platform);
   }
 
-  // Oyuncunun pozisyonuna göre yeni platformlar üret
+  // Map sistemi için platform yönetimi (sonsuz üretim yok)
   generatePlatformsIfNeeded(playerY) {
-    const config = GameConfig.PLATFORM_GENERATION;
-
-    // Eğer oyuncu yeterince yukarı çıktıysa yeni platformlar üret
-    if (this.highestPlatformY - playerY < config.GENERATION_TRIGGER_DISTANCE) {
-      this.generateNewPlatforms();
-    }
-
-    // Platform görünürlüğünü güncelle
+    // Sadece platform görünürlüğünü güncelle
     this.updatePlatformVisibility(playerY);
 
-    // Ekranın çok altında kalan platformları temizle
-    this.cleanupOldPlatforms(playerY);
+    // Map sistemi sonlu olduğundan cleanup yapmıyoruz
+    // Tüm platformlar bellekte kalacak
   }
 
   // Platform görünürlük kontrolü

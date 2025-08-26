@@ -1,42 +1,29 @@
 {
   "id": 1,
   "name": "Başlangıç",
-  "description": "İlk seviye - temel platformlar",
+  "description": "İlk seviye - basit zigzag map",
   "difficulty": "easy",
   "timer": 60000,
-  "platforms": [
-    { "x": 340, "y": 500, "width": 120, "height": 20 },
-    { "x": 200, "y": 430, "width": 120, "height": 20 },
-    { "x": 480, "y": 360, "width": 120, "height": 20 },
-    { "x": 200, "y": 290, "width": 120, "height": 20 },
-    { "x": 480, "y": 220, "width": 120, "height": 20 },
-    { "x": 340, "y": 150, "width": 120, "height": 20 }
-  ],
+  "map": {
+    "levelMap": ["x-x", "--x", "-x-", "x--", "--x", "-x-", "x-x"],
+    "platformSpacing": {
+      "horizontal": 200,
+      "vertical": 85
+    },
+    "platformSize": {
+      "width": 120,
+      "height": 20
+    },
+    "startPosition": {
+      "x": 400,
+      "y": 500
+    }
+  },
   "player": {
-    "startX": 400,
-    "startY": 450,
+    "startX": 200,
+    "startY": 480,
     "jumpForce": 11.0,
     "moveSpeed": 2.5
-  },
-  "generation": {
-    "verticalSpacing": 70,
-    "patterns": [
-      {
-        "name": "zigzag",
-        "positions": ["left", "right", "left", "right"],
-        "weight": 4
-      },
-      {
-        "name": "center_edge",
-        "positions": ["center", "left", "center", "right"],
-        "weight": 2
-      }
-    ],
-    "positions": {
-      "left": 200,
-      "center": 340,
-      "right": 480
-    }
   },
   "scoring": {
     "bombPoints": 1,

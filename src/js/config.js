@@ -29,15 +29,37 @@ export const GameConfig = {
     GROUND_FRICTION: 0.85, // Yerde sürtünme
   },
 
-  // Platform ayarları - Başlangıç platformları (pattern uyumlu)
-  PLATFORMS: [
-    { x: 340, y: 500, width: 120, height: 20 }, // Başlangıç - merkez
-    { x: 200, y: 430, width: 120, height: 20 }, // Sol (merkeze yakın)
-    { x: 480, y: 360, width: 120, height: 20 }, // Sağ (merkeze yakın)
-    { x: 200, y: 290, width: 120, height: 20 }, // Sol (merkeze yakın)
-    { x: 480, y: 220, width: 120, height: 20 }, // Sağ (merkeze yakın)
-    { x: 340, y: 150, width: 120, height: 20 }, // Merkez
-  ],
+  // MAP SİSTEMİ - ASCII formatında level tasarımı
+  // x = platform, - = boşluk (her satır bir platform seviyesi)
+  MAP: {
+    LEVEL_MAP: [
+      "x-x", // En üst seviye
+      "--x",
+      "-x-",
+      "x--",
+      "--x",
+      "-x-",
+      "x-x",
+      "--x",
+      "-x-",
+      "x-x", // Başlangıç seviyesi (en alt)
+    ],
+    PLATFORM_SPACING: {
+      HORIZONTAL: 200, // Platformlar arası yatay mesafe
+      VERTICAL: 85, // Platformlar arası dikey mesafe
+    },
+    PLATFORM_SIZE: {
+      WIDTH: 120,
+      HEIGHT: 20,
+    },
+    START_POSITION: {
+      X: 400, // Ekran merkezinden başla
+      Y: 500, // Alt seviyeden başla
+    },
+  },
+
+  // Platform ayarları - Eskisi (artık kullanılmayacak)
+  PLATFORMS: [],
 
   // Dinamik platform üretimi ayarları
   PLATFORM_GENERATION: {
@@ -45,7 +67,7 @@ export const GameConfig = {
     SCREEN_HEIGHT: 600, // Ekran yüksekliği
     PLATFORM_WIDTH: 120, // Sabit platform genişliği
     PLATFORM_HEIGHT: 20, // Platform yüksekliği
-    VERTICAL_SPACING: 70, // Sabit dikey aralık (normal)
+    VERTICAL_SPACING: 85, // Sabit dikey aralık (biraz daha uzak)
     PLATFORMS_AHEAD: 8, // Oyuncunun önünde kaç platform olsun
     GENERATION_TRIGGER_DISTANCE: 300, // Bu mesafede yeni platform üret
 

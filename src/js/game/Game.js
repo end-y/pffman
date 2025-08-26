@@ -24,10 +24,7 @@ export class Game {
     this.gameOverScreen = null;
     this.currentLevelId = levelId;
 
-    // Yükseklik tabanlı ilerleyiş takibi
-    this.playerStartY = GameConfig.PLAYER.START_Y;
-    this.highestReachedY = GameConfig.PLAYER.START_Y;
-    this.heightScore = 0;
+    // Yükseklik tabanlı skor sistemi kaldırıldı - sadece bomba skoru kullanılıyor
   }
 
   async initialize() {
@@ -61,10 +58,6 @@ export class Game {
 
     // Level ayarlarını GameConfig'e uygula
     this.levelManager.applyLevelToConfig(GameConfig);
-
-    // Start Y pozisyonunu güncelle
-    this.playerStartY = GameConfig.PLAYER.START_Y;
-    this.highestReachedY = GameConfig.PLAYER.START_Y;
 
     console.log(`Level ${level.id} başlatılıyor: ${level.name}`);
   }
@@ -140,8 +133,7 @@ export class Game {
     // Dinamik platform üretimi
     this.platformManager.generatePlatformsIfNeeded(this.player.sprite.y);
 
-    // Yükseklik skorunu güncelle
-    this.updateHeightScore();
+    // Yükseklik skoru kaldırıldı - sadece bomba söndürme skoru kullanılıyor
 
     // Kamera takibi
     this.updateCamera();
@@ -218,23 +210,11 @@ export class Game {
     this.timer.reset(GameConfig.TIME.GAME_DURATION);
   }
 
-  updateHeightScore() {
-    const currentY = this.player.sprite.y;
-
-    // Eğer oyuncu daha yukarı çıktıysa yükseklik skorunu güncelle
-    if (currentY < this.highestReachedY) {
-      this.highestReachedY = currentY;
-      // Her 10 piksel yukarı çıkma için 1 puan
-      this.heightScore = Math.floor(
-        (this.playerStartY - this.highestReachedY) / 10
-      );
-      this.updateScoreDisplay();
-    }
-  }
+  // updateHeightScore fonksiyonu kaldırıldı - sadece bomba skoru kullanılıyor
 
   updateScoreDisplay() {
-    const totalScore = this.score + this.heightScore;
-    this.scoreDisplay.updateScore(totalScore);
+    // Sadece bomba skoru gösterilir, yükseklik skoru kaldırıldı
+    this.scoreDisplay.updateScore(this.score);
   }
 
   updateCamera() {
@@ -391,6 +371,30 @@ export class Game {
       this.endGame("Bomba sahne dışına çıktı!");
       return;
     }
+
+    // Map sonuna ulaşma kontrolü (kazanma durumu)
+    if (this.checkMapCompletion()) {
+      this.endGame("Tebrikler! Map'i tamamladın!");
+      return;
+    }
+  }
+
+  // Map'in sonuna ulaşıp ulaşmadığını kontrol et
+  checkMapCompletion() {
+    const platforms = this.platformManager.getPlatforms();
+    if (platforms.length === 0) return false;
+
+    // En yüksek platformu bul
+    const highestPlatform = platforms.reduce((highest, current) =>
+      current.hitArea.y < highest.hitArea.y ? current : highest
+    );
+
+    // Oyuncu en yüksek platformun üzerinde mi?
+    const playerY = this.player.sprite.y;
+    const highestY = highestPlatform.hitArea.y;
+
+    // Oyuncu en yüksek platformdan 100px yukarıdaysa kazandı
+    return playerY < highestY - 100;
   }
 
   checkCameraBounds() {

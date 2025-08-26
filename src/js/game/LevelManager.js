@@ -42,8 +42,35 @@ export class LevelManager {
   applyLevelToConfig(gameConfig) {
     if (!this.currentLevel) return gameConfig;
 
-    // Platform ayarlarını uygula
-    gameConfig.PLATFORMS = this.currentLevel.platforms;
+    // Map sistemi ayarlarını uygula
+    if (this.currentLevel.map) {
+      const mapConfig = this.currentLevel.map;
+      gameConfig.MAP.LEVEL_MAP = mapConfig.levelMap;
+
+      // platformSpacing'i PLATFORM_SPACING formatına çevir
+      if (mapConfig.platformSpacing) {
+        gameConfig.MAP.PLATFORM_SPACING = {
+          HORIZONTAL: mapConfig.platformSpacing.horizontal,
+          VERTICAL: mapConfig.platformSpacing.vertical,
+        };
+      }
+
+      // platformSize'ı PLATFORM_SIZE formatına çevir
+      if (mapConfig.platformSize) {
+        gameConfig.MAP.PLATFORM_SIZE = {
+          WIDTH: mapConfig.platformSize.width,
+          HEIGHT: mapConfig.platformSize.height,
+        };
+      }
+
+      // startPosition'ı START_POSITION formatına çevir
+      if (mapConfig.startPosition) {
+        gameConfig.MAP.START_POSITION = {
+          X: mapConfig.startPosition.x,
+          Y: mapConfig.startPosition.y,
+        };
+      }
+    }
 
     // Oyuncu ayarlarını uygula
     const playerConfig = this.currentLevel.player;
@@ -51,13 +78,6 @@ export class LevelManager {
     gameConfig.PLAYER.START_Y = playerConfig.startY;
     gameConfig.PLAYER.JUMP_FORCE = playerConfig.jumpForce;
     gameConfig.PLAYER.MOVE_SPEED = playerConfig.moveSpeed;
-
-    // Platform üretim ayarlarını uygula
-    const generation = this.currentLevel.generation;
-    gameConfig.PLATFORM_GENERATION.VERTICAL_SPACING =
-      generation.verticalSpacing;
-    gameConfig.PLATFORM_GENERATION.PATTERNS = generation.patterns;
-    gameConfig.PLATFORM_GENERATION.POSITIONS = generation.positions;
 
     // Zaman ayarlarını uygula
     gameConfig.TIME.GAME_DURATION = this.currentLevel.timer;
